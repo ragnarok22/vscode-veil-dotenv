@@ -3,6 +3,7 @@
 	"displayName": "dotveil",
 	"description": "Hide sensitive values in .env files and other config files",
 	"version": "0.0.1",
+	"icon": "dotveil.png",
 	"publisher": "ragnarokreinier",
 	"license": "GPL-3.0",
 	"repository": {

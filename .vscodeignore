@@ -17,3 +17,5 @@ tsconfig.json
 vsc-extension-quickstart.md
 **/*.map
 **/*.ts
+out/
+.vscode-test.mjs
