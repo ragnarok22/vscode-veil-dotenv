@@ -13,5 +13,18 @@ pnpm-lock.yaml
 package-lock.json
 pnpm-workspace.yaml
 
+# Exclude development config files
+tsconfig.json
+eslint.config.mjs
+esbuild.js
+.vscode/**
+.vscode-test.mjs
+.prettierignore
+.prettierrc
+
+# Exclude AI agent instruction files
+AGENTS.md
+CLAUDE.md
+
 # Exclude potential local secrets or env files
 .env*
