@@ -1,6 +1,6 @@
-# Veil 🙈
+# DotVeil 🙈
 
-Veil is a VS Code extension that automatically hides sensitive values in your configuration files to prevent shoulder surfing or accidental screen sharing leaks.
+DotVeil (formerly Veil) is a VS Code extension that automatically hides sensitive values in your configuration files to prevent shoulder surfing or accidental screen sharing leaks.
 
 ## Features
 
@@ -10,7 +10,7 @@ Veil is a VS Code extension that automatically hides sensitive values in your co
 
 ## Supported Files
 
-Veil works out of the box with:
+DotVeil works out of the box with:
 
 - `.env*` (e.g., `.env`, `.env.local`, `.env.production`)
 - `.npmrc`, `.pypirc`
@@ -19,7 +19,7 @@ Veil works out of the box with:
 
 ## Supported Patterns
 
-Veil automatically identifies and masks values for keys matching these patterns (case-insensitive where applicable):
+DotVeil automatically identifies and masks values for keys matching these patterns (case-insensitive where applicable):
 
 - `*_KEY`, `*_SECRET`, `*_TOKEN`, `*_PASSWORD`
 - `API_KEY`, `AUTH_SECRET`
@@ -28,14 +28,14 @@ Veil automatically identifies and masks values for keys matching these patterns 
 
 ## Commands
 
-- `Veil: Toggle Masking`: Enable or disable masking globally.
+- `DotVeil: Toggle Masking`: Enable or disable masking globally.
 
 ## File-Level Configuration
 
-You can disable Veil for a specific file by adding a comment anywhere in the file:
+You can disable DotVeil for a specific file by adding a comment anywhere in the file:
 
 ```properties
-# veil: off
+# dotveil: off
 ```
 
 To re-enable it, simply remove the comment.
