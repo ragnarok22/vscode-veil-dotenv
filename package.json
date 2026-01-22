@@ -3,11 +3,25 @@
 	"displayName": "veil",
 	"description": "Hide sensitive values in .env files and other config files",
 	"version": "0.0.1",
+	"publisher": "veil",
+	"license": "GPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ragnarok22/vscode-veil-dotenv"
+	},
 	"engines": {
 		"vscode": "^1.104.0"
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"veil",
+		"security",
+		"masking",
+		"secrets",
+		"dotenv",
+		"env"
 	],
 	"activationEvents": [
 		"*"
