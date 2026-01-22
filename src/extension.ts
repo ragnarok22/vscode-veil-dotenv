@@ -54,6 +54,10 @@ export function activate(context: vscode.ExtensionContext) {
 	if (vscode.window.activeTextEditor) {
 		updateDecorations(vscode.window.activeTextEditor);
 	}
+	// Also check all visible editors in case of split views
+	vscode.window.visibleTextEditors.forEach((editor) => {
+		updateDecorations(editor);
+	});
 }
 
 function triggerUpdateDecorations() {
