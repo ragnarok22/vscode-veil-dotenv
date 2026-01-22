@@ -39,3 +39,46 @@ You can disable DotVeil for a specific file by adding a comment anywhere in the 
 ```
 
 To re-enable it, simply remove the comment.
+
+## Development
+
+### Prerequisites
+
+- Node.js (v18+)
+- pnpm (v8+)
+
+### Setup
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/ragnarok22/vscode-veil-dotenv.git
+    cd vscode-veil-dotenv
+    ```
+2.  Install dependencies:
+    ```bash
+    pnpm install
+    ```
+
+### Running the Extension
+
+1.  Open the project in VS Code:
+    ```bash
+    code .
+    ```
+2.  Press `F5` to start the Extension Development Host.
+
+### Running Tests
+
+```bash
+pnpm test
+```
+
+### Building the VSIX Package
+
+To build the extension package (`.vsix`) for distribution:
+
+```bash
+npx @vscode/vsce package --no-dependencies
+```
+
+> **Note**: The `--no-dependencies` flag is required because we bundle dependencies using `esbuild`.
