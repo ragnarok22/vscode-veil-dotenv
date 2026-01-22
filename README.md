@@ -1,71 +1,40 @@
-# veil README
+# Veil 🙈
 
-This is the README for your extension "veil". After writing up a brief description, we recommend including the following sections.
+Veil is a VS Code extension that automatically hides sensitive values in your configuration files to prevent shoulder surfing or accidental screen sharing leaks.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+-   **Automatic Masking**: Sensitive values are replaced with `*******` in the editor.
+-   **Secure**: The actual file content is **never modified**, only the visual representation.
+-   **Toggleable**: Quickly toggle masking on/off globally or per-file.
 
-For example if there is an image subfolder under your extension project workspace:
+## Supported Files
 
-\!\[feature X\]\(images/feature-x.png\)
+Veil works out of the box with:
+-   `.env*` (e.g., `.env`, `.env.local`, `.env.production`)
+-   `.npmrc`, `.pypirc`
+-   `secrets.yaml`, `secrets.yml`, `.secrets`
+-   `credentials.json`
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Supported Patterns
 
-## Requirements
+Veil automatically identifies and masks values for keys matching these patterns (case-insensitive where applicable):
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+-   `*_KEY`, `*_SECRET`, `*_TOKEN`, `*_PASSWORD`
+-   `API_KEY`, `AUTH_SECRET`
+-   `DATABASE_URL`, `REDIS_URL`
+-   `password`, `secret`, `token`
 
-## Extension Settings
+## Commands
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+-   `Veil: Toggle Masking`: Enable or disable masking globally.
 
-For example:
+## File-Level Configuration
 
-This extension contributes the following settings:
+You can disable Veil for a specific file by adding a comment anywhere in the file:
 
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+```properties
+# veil: off
+```
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+To re-enable it, simply remove the comment.
