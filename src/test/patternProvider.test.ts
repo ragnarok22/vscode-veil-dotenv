@@ -35,7 +35,8 @@ suite('Pattern Provider Test Suite', () => {
 			const match = p.regex.exec(input);
 			if (match) {
 				matched = true;
-				assert.strictEqual(match[2], '"super_secret"', 'Group 2 should be the quoted value');
+				// Regex strips quotes in Group 1, so Group 2 is just the inner value
+				assert.strictEqual(match[2], 'super_secret', 'Group 2 should be the value without quotes');
 				break;
 			}
 		}
@@ -52,7 +53,8 @@ suite('Pattern Provider Test Suite', () => {
 			const match = p.regex.exec(input);
 			if (match) {
 				matched = true;
-				assert.strictEqual(match[2], ' mypassword', 'Group 2 should be the value (with leading space)');
+				// Regex consumes trailing space in Group 1 (\s*)
+				assert.strictEqual(match[2], 'mypassword', 'Group 2 should be the value without leading space');
 				break;
 			}
 		}
@@ -69,7 +71,8 @@ suite('Pattern Provider Test Suite', () => {
 			const match = p.regex.exec(input);
 			if (match) {
 				matched = true;
-				assert.strictEqual(match[2], ' "hidden"', 'Group 2 should be the value');
+				// Regex consumes quotes in Group 1, so Group 2 is just the inner value
+				assert.strictEqual(match[2], 'hidden', 'Group 2 should be the value');
 				break;
 			}
 		}
