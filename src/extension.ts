@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { shouldMaskFile } from './utils/fileMatcher';
+import { getMaskingPatterns } from './utils/patternProvider';
 
 let isVeilEnabled = true;
 
@@ -65,9 +67,9 @@ function updateDecorations(editor: vscode.TextEditor) {
 		return;
 	}
 
-	const filename = path.basename(editor.document.fileName);
-	// Support .env, .env.local, .env.production, etc.
-	if (!filename.startsWith('.env')) {
+	const filename = editor.document.fileName;
+
+	if (!shouldMaskFile(filename)) {
 		return;
 	}
 
@@ -89,35 +91,61 @@ function updateDecorations(editor: vscode.TextEditor) {
 		return;
 	}
 
-	// Regex to match KEY=VALUE
-	const envRegex = /^([\w_.-]+)\s*=\s*(.*)$/gm;
-	let match;
-	while ((match = envRegex.exec(text))) {
-		const key = match[1];
-		const value = match[2];
+	const patterns = getMaskingPatterns(filename);
 
-		// Skip empty values
-		if (!value || value.trim() === '') {
-			continue;
-		}
+	for (const pattern of patterns) {
+		let match;
+		// Reset regex state just in case
+		pattern.regex.lastIndex = 0;
+		while ((match = pattern.regex.exec(text))) {
+			// Specific handling based on type to ensure we capture the correct value group
+			// Current implementation assumes:
+			// Group 1: Prefix (key + separators)
+			// Group 2: Value to mask
+			// Group 3: Suffix (optional, e.g. closing quote)
 
-		// Calculate range for the VALUE part
-		const startPos = editor.document.positionAt(match.index + match[0].length - value.length);
-		const endPos = editor.document.positionAt(match.index + match[0].length);
+			const value = match[2];
 
-		// Handle quotes if present (mask content inside quotes)
-		// Simple check for surrounding quotes
-		let range = new vscode.Range(startPos, endPos);
+			// Skip empty values
+			if (!value || value.trim() === '') {
+				continue;
+			}
 
-		if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-			if (value.length > 2) {
-				// Mask inside quotes
-				range = new vscode.Range(startPos.translate(0, 1), endPos.translate(0, -1));
+			// Calculate range for the VALUE part
+			// match.index is the start of the whole match
+			// match[1] is the prefix
+			const prefixLength = match[1].length;
+			const startOffset = match.index + prefixLength;
+			const endOffset = startOffset + value.length;
+
+			const startPos = editor.document.positionAt(startOffset);
+			const endPos = editor.document.positionAt(endOffset);
+
+			// Handle quotes if present (mask content inside quotes) for ENV/YAML simple cases where regex captured quotes
+			// JSON regex already handles quotes by excluding them from Group 2, so we don't need to strip them there.
+			// But for ENV/YAML, our regex might capture quotes if they are part of the value group (standard lazy matching).
+
+			// Actually patternProvider regex for JSON captures the content *inside* quotes as group 2.
+			// PatternProvider for ENV captures everything after '=' as group 2.
+			// PatternProvider for YAML captures everything after ':' as group 2.
+
+			let range = new vscode.Range(startPos, endPos);
+
+			if (pattern.type === 'env' || pattern.type === 'yaml') {
+				if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+					if (value.length > 2) {
+						// Mask inside quotes
+						range = new vscode.Range(startPos.translate(0, 1), endPos.translate(0, -1));
+						rangesToMask.push(range);
+					}
+				} else {
+					// Mask entire value
+					rangesToMask.push(range);
+				}
+			} else {
+				// For JSON, we already captured the inner value
 				rangesToMask.push(range);
 			}
-		} else {
-			// Mask entire value
-			rangesToMask.push(range);
 		}
 	}
 
