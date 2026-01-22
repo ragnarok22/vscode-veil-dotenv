@@ -1,26 +1,120 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as path from 'path';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+let isVeilEnabled = true;
+
+// Decoration type: Hides the text and adds asterisks overlay
+const maskDecorationType = vscode.window.createTextEditorDecorationType({
+	backgroundColor: new vscode.ThemeColor('editor.background'), // Match background to cover text
+	color: 'transparent', // Make original text transparent
+	textDecoration: 'none; display: inline-block;', // Ensure it takes up space but isn't visible
+	before: {
+		contentText: '*******',
+		color: new vscode.ThemeColor('editor.foreground'), // Visible asterisks
+		fontWeight: 'bold',
+	}
+});
+
 export function activate(context: vscode.ExtensionContext) {
+	console.log('Veil is active');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "veil" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('veil.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from veil!');
+	// Command to toggle masking globally
+	const toggleCommand = vscode.commands.registerCommand('veil.toggle', () => {
+		isVeilEnabled = !isVeilEnabled;
+		vscode.window.showInformationMessage(`Veil is now ${isVeilEnabled ? 'enabled' : 'disabled'}`);
+		triggerUpdateDecorations();
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(toggleCommand);
+
+	// Event listeners
+	vscode.window.onDidChangeActiveTextEditor(editor => {
+		if (editor) {
+			updateDecorations(editor);
+		}
+	}, null, context.subscriptions);
+
+	vscode.workspace.onDidChangeTextDocument(event => {
+		if (vscode.window.activeTextEditor && event.document === vscode.window.activeTextEditor.document) {
+			updateDecorations(vscode.window.activeTextEditor);
+		}
+	}, null, context.subscriptions);
+
+	// Initial update
+	if (vscode.window.activeTextEditor) {
+		updateDecorations(vscode.window.activeTextEditor);
+	}
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+function triggerUpdateDecorations() {
+	if (vscode.window.activeTextEditor) {
+		updateDecorations(vscode.window.activeTextEditor);
+	}
+}
+
+function updateDecorations(editor: vscode.TextEditor) {
+	if (!editor) {
+		return;
+	}
+
+	const filename = path.basename(editor.document.fileName);
+	// Support .env, .env.local, .env.production, etc.
+	if (!filename.startsWith('.env')) {
+		return;
+	}
+
+	const text = editor.document.getText();
+	const rangesToMask: vscode.Range[] = [];
+
+	// Check for file-level toggle comment: # veil: off
+	const lines = text.split(/\r?\n/);
+	for (const line of lines) {
+		if (line.trim().match(/^#\s*veil:\s*off$/i)) {
+			// File specific disable
+			editor.setDecorations(maskDecorationType, []);
+			return;
+		}
+	}
+
+	if (!isVeilEnabled) {
+		editor.setDecorations(maskDecorationType, []);
+		return;
+	}
+
+	// Regex to match KEY=VALUE
+	const envRegex = /^([\w_.-]+)\s*=\s*(.*)$/gm;
+	let match;
+	while ((match = envRegex.exec(text))) {
+		const key = match[1];
+		const value = match[2];
+
+		// Skip empty values
+		if (!value || value.trim() === '') {
+			continue;
+		}
+
+		// Calculate range for the VALUE part
+		const startPos = editor.document.positionAt(match.index + match[0].length - value.length);
+		const endPos = editor.document.positionAt(match.index + match[0].length);
+
+		// Handle quotes if present (mask content inside quotes)
+		// Simple check for surrounding quotes
+		let range = new vscode.Range(startPos, endPos);
+
+		if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+			if (value.length > 2) {
+				// Mask inside quotes
+				range = new vscode.Range(startPos.translate(0, 1), endPos.translate(0, -1));
+				rangesToMask.push(range);
+			}
+		} else {
+			// Mask entire value
+			rangesToMask.push(range);
+		}
+	}
+
+	editor.setDecorations(maskDecorationType, rangesToMask);
+}
+
+export function deactivate() { }
+
