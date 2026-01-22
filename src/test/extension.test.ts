@@ -14,10 +14,10 @@ suite('Extension Test Suite', () => {
 	});
 	// Regression test for activation bug
 	test('Extension should activate automatically', async () => {
-		// Verify activationEvents includes "*"
+		// Verify activationEvents includes "onStartupFinished"
 		const packageJSON = require('../../package.json');
 		const activationEvents = packageJSON.activationEvents;
-		assert.ok(activationEvents.includes('*'), 'Activation events should include "*"');
+		assert.ok(activationEvents.includes('onStartupFinished'), 'Activation events should include "onStartupFinished"');
 
 		// In a real VS Code test environment, we can assume the extension host respects this.
 		// We can also check if our activation log happened (via a spy if we had one),
