@@ -1,21 +1,17 @@
-.vscode/
-.vscode-test/
-.github/
-node_modules/
-src/
-.gitignore
-.prettierignore
-.env.example
-AGENTS.md
-CLAUDE.md
-esbuild.js
-eslint.config.mjs
-package-lock.json
-pnpm-lock.yaml
-pnpm-workspace.yaml
-tsconfig.json
-vsc-extension-quickstart.md
+# Exclude development sources and build outputs
+src/**
+out/**
+node_modules/**
+**/*.test.ts
 **/*.map
-**/*.ts
-out/
-.vscode-test.mjs
+*.vsix
+
+# Exclude repo and tooling metadata
+.gitignore
+.github/**
+pnpm-lock.yaml
+package-lock.json
+pnpm-workspace.yaml
+
+# Exclude potential local secrets or env files
+.env*
