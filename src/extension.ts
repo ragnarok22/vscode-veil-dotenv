@@ -98,11 +98,9 @@ function updateDecorations(editor: vscode.TextEditor) {
 		// Reset regex state just in case
 		pattern.regex.lastIndex = 0;
 		while ((match = pattern.regex.exec(text))) {
-			// Specific handling based on type to ensure we capture the correct value group
-			// Current implementation assumes:
-			// Group 1: Prefix (key + separators)
+			// Generic logic for all patterns from user list:
+			// Group 1: Prefix (Key + Separator + Quote)
 			// Group 2: Value to mask
-			// Group 3: Suffix (optional, e.g. closing quote)
 
 			const value = match[2];
 
@@ -111,9 +109,8 @@ function updateDecorations(editor: vscode.TextEditor) {
 				continue;
 			}
 
-			// Calculate range for the VALUE part
-			// match.index is the start of the whole match
-			// match[1] is the prefix
+			// Value is group 2.
+			// Start offset = match index + length of group 1
 			const prefixLength = match[1].length;
 			const startOffset = match.index + prefixLength;
 			const endOffset = startOffset + value.length;
@@ -121,31 +118,8 @@ function updateDecorations(editor: vscode.TextEditor) {
 			const startPos = editor.document.positionAt(startOffset);
 			const endPos = editor.document.positionAt(endOffset);
 
-			// Handle quotes if present (mask content inside quotes) for ENV/YAML simple cases where regex captured quotes
-			// JSON regex already handles quotes by excluding them from Group 2, so we don't need to strip them there.
-			// But for ENV/YAML, our regex might capture quotes if they are part of the value group (standard lazy matching).
-
-			// Actually patternProvider regex for JSON captures the content *inside* quotes as group 2.
-			// PatternProvider for ENV captures everything after '=' as group 2.
-			// PatternProvider for YAML captures everything after ':' as group 2.
-
-			let range = new vscode.Range(startPos, endPos);
-
-			if (pattern.type === 'env' || pattern.type === 'yaml') {
-				if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-					if (value.length > 2) {
-						// Mask inside quotes
-						range = new vscode.Range(startPos.translate(0, 1), endPos.translate(0, -1));
-						rangesToMask.push(range);
-					}
-				} else {
-					// Mask entire value
-					rangesToMask.push(range);
-				}
-			} else {
-				// For JSON, we already captured the inner value
-				rangesToMask.push(range);
-			}
+			const range = new vscode.Range(startPos, endPos);
+			rangesToMask.push(range);
 		}
 	}
 
