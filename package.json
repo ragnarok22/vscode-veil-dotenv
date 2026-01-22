@@ -14,10 +14,6 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "veil.helloWorld",
-				"title": "Hello World"
-			},
-			{
 				"command": "veil.toggle",
 				"title": "Veil: Toggle Masking"
 			}
