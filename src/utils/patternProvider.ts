@@ -1,46 +1,39 @@
-import * as path from 'path';
-
 export interface MaskingPattern {
 	regex: RegExp;
-	type: 'env' | 'yaml' | 'json';
+	type: 'generic';
 }
 
 export function getMaskingPatterns(filename: string): MaskingPattern[] {
-	const basename = path.basename(filename).toLowerCase();
+	// Generic patterns for any file (ENV, YAML, JSON supported via flexible regex)
+	// Translating Lua patterns: (%w+_KEY%s*[=:]%s*[\"']?)([^\"'\n]+) -> JS: ((?:["']?)\w+_KEY(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)
 
-	if (basename.endsWith('.json')) {
-		return [
-			{
-				// Match "key": "value"
-				// Group 1: "key": "
-				// Group 2: value (to mask)
-				// Group 3: " (closing quote and optional comma)
-				regex: /^(\s*"[^"]+"\s*:\s*")(.*)("[,]?.*)$/gm,
-				type: 'json',
-			},
-		];
-	}
-
-	if (basename.endsWith('.yaml') || basename.endsWith('.yml')) {
-		return [
-			{
-				// Match key: value
-				// Group 1: key:
-				// Group 2: value (to mask)
-				regex: /^(\s*[\w_.-]+\s*:\s*)(.*)$/gm,
-				type: 'yaml',
-			},
-		];
-	}
-
-	// Default to env/config style (KEY=VALUE)
-	return [
-		{
-			// Match KEY=VALUE
-			// Group 1: KEY=
-			// Group 2: VALUE (to mask)
-			regex: /^([\w_.-]+\s*=\s*)(.*)$/gm,
-			type: 'env',
-		},
+	const patterns = [
+		// %w+_KEY
+		/((?:["']?)\w+_KEY(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// %w+_SECRET
+		/((?:["']?)\w+_SECRET(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// %w+_TOKEN
+		/((?:["']?)\w+_TOKEN(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// %w+_PASSWORD
+		/((?:["']?)\w+_PASSWORD(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// API_KEY
+		/((?:["']?)API_KEY(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// AUTH_SECRET
+		/((?:["']?)AUTH_SECRET(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// DATABASE_URL
+		/((?:["']?)DATABASE_URL(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// REDIS_URL
+		/((?:["']?)REDIS_URL(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// password (lower case specific)
+		/((?:["']?)password(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// secret (lower case specific)
+		/((?:["']?)secret(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
+		// token (lower case specific)
+		/((?:["']?)token(?:["']?)\s*[=:]\s*["']?)([^"'\n]+)/g,
 	];
+
+	return patterns.map((regex) => ({
+		regex,
+		type: 'generic',
+	}));
 }
