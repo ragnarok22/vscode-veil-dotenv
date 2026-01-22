@@ -3,7 +3,7 @@
 	"displayName": "veil",
 	"description": "Hide sensitive values in .env files and other config files",
 	"version": "0.0.1",
-	"publisher": "veil",
+	"publisher": "ragnarokreinier",
 	"license": "GPL-3.0",
 	"repository": {
 		"type": "git",
