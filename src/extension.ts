@@ -12,7 +12,7 @@ const maskDecorationType = vscode.window.createTextEditorDecorationType({
 		contentText: '*******',
 		color: new vscode.ThemeColor('editor.foreground'), // Visible asterisks
 		fontWeight: 'bold',
-	}
+	},
 });
 
 export function activate(context: vscode.ExtensionContext) {
@@ -28,17 +28,25 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(toggleCommand);
 
 	// Event listeners
-	vscode.window.onDidChangeActiveTextEditor(editor => {
-		if (editor) {
-			updateDecorations(editor);
-		}
-	}, null, context.subscriptions);
+	vscode.window.onDidChangeActiveTextEditor(
+		(editor) => {
+			if (editor) {
+				updateDecorations(editor);
+			}
+		},
+		null,
+		context.subscriptions,
+	);
 
-	vscode.workspace.onDidChangeTextDocument(event => {
-		if (vscode.window.activeTextEditor && event.document === vscode.window.activeTextEditor.document) {
-			updateDecorations(vscode.window.activeTextEditor);
-		}
-	}, null, context.subscriptions);
+	vscode.workspace.onDidChangeTextDocument(
+		(event) => {
+			if (vscode.window.activeTextEditor && event.document === vscode.window.activeTextEditor.document) {
+				updateDecorations(vscode.window.activeTextEditor);
+			}
+		},
+		null,
+		context.subscriptions,
+	);
 
 	// Initial update
 	if (vscode.window.activeTextEditor) {
@@ -116,5 +124,4 @@ function updateDecorations(editor: vscode.TextEditor) {
 	editor.setDecorations(maskDecorationType, rangesToMask);
 }
 
-export function deactivate() { }
-
+export function deactivate() {}
