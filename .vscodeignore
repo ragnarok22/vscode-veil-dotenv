@@ -13,6 +13,9 @@ pnpm-lock.yaml
 package-lock.json
 pnpm-workspace.yaml
 
+# Exclude test downloads (VS Code binaries)
+.vscode-test/**
+
 # Exclude development config files
 tsconfig.json
 eslint.config.mjs
