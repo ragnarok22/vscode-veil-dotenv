@@ -18,12 +18,12 @@ const maskDecorationType = vscode.window.createTextEditorDecorationType({
 });
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('DotVeil is active');
+	console.log('Dot Veil is active');
 
 	// Command to toggle masking globally
-	const toggleCommand = vscode.commands.registerCommand('dotveil.toggle', () => {
+	const toggleCommand = vscode.commands.registerCommand('dot-veil.toggle', () => {
 		isDotVeilEnabled = !isDotVeilEnabled;
-		vscode.window.showInformationMessage(`DotVeil is now ${isDotVeilEnabled ? 'enabled' : 'disabled'}`);
+		vscode.window.showInformationMessage(`Dot Veil is now ${isDotVeilEnabled ? 'enabled' : 'disabled'}`);
 		triggerUpdateDecorations();
 	});
 
@@ -80,10 +80,10 @@ function updateDecorations(editor: vscode.TextEditor) {
 	const text = editor.document.getText();
 	const rangesToMask: vscode.Range[] = [];
 
-	// Check for file-level toggle comment: # dotveil: off
+	// Check for file-level toggle comment: # dot-veil: off
 	const lines = text.split(/\r?\n/);
 	for (const line of lines) {
-		if (line.trim().match(/^#\s*dotveil:\s*off$/i)) {
+		if (line.trim().match(/^#\s*dot-veil:\s*off$/i)) {
 			// File specific disable
 			editor.setDecorations(maskDecorationType, []);
 			return;

@@ -1,6 +1,6 @@
 {
-	"name": "dotveil",
-	"displayName": "dotveil",
+	"name": "dot-veil",
+	"displayName": "Dot Veil",
 	"description": "Hide sensitive values in .env files and other config files",
 	"version": "0.0.1",
 	"icon": "dotveil.png",
@@ -39,8 +39,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "dotveil.toggle",
-				"title": "DotVeil: Toggle Masking"
+				"command": "dot-veil.toggle",
+				"title": "Dot Veil: Toggle Masking"
 			}
 		]
 	},

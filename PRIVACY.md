@@ -1,10 +1,10 @@
-# Privacy Policy for DotVeil
+# Privacy Policy for Dot Veil
 
 **Effective Date:** January 22, 2026
 
 ## 1. Data Collection
 
-DotVeil does **not** collect, store, or transmit any personal data or sensitive information.
+Dot Veil does **not** collect, store, or transmit any personal data or sensitive information.
 
 - **No Telemetry**: The extension does not track usage statistics or error reports.
 - **No Remote Connections**: The extension runs entirely locally on your machine. It does not connect to any external servers or APIs.
